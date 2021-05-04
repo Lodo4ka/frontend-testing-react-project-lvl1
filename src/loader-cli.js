@@ -1,6 +1,5 @@
 import { Command } from 'commander';
-import downloadFile from './downloadFile';
-
+import downloadFile from './downloadPage';
 
 export default () => {
   const program = new Command();
@@ -11,7 +10,7 @@ export default () => {
     .option('--output [dirPath]', 'directory for output file')
     .action(async (url) => {
       const opts = program.opts();
-      const dirPath = opts.output;
+      const dirPath = opts.output ?? process.cwd();
       await downloadFile(url, dirPath);
     })
     .parse(process.argv)

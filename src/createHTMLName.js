@@ -5,6 +5,6 @@ export default (path) => {
     const fileName = `${hostname}${pathname}`.split(regexNonCharacter).join('-');
     return `${fileName}.html`;
   } catch (e) {
-    throw new Error('non valid html');
+    throw new Error('non valid url');
   }
 };
