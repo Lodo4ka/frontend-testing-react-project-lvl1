@@ -6,6 +6,7 @@ import cheerio from 'cheerio';
 import createHTMLName from './createHTMLName';
 import createDirectoryName from './createDirectoryName';
 import createFileName from './createFileName';
+import createFileURL from './createFileURL';
 
 export default async (url, dirPath) => {
   const fileName = createHTMLName(url);
@@ -13,12 +14,17 @@ export default async (url, dirPath) => {
   const { data } = await axios.get(url);
   const $ = cheerio.load(data);
   const urlsImgs = $('img').map((i, img) => $(img).attr('src')).toArray();
-  const blobImgs = await Promise.all(urlsImgs.map((urlArg) => axios.get(urlArg, { responseType: 'arraybuffer' })));
+  const blobImgs = await Promise.all(urlsImgs.map((urlArg) => {
+    const imgUrl = createFileURL(urlArg, url);
+    return axios.get(imgUrl, { responseType: 'arraybuffer' });
+  }));
+
   const buffBlobs = blobImgs.map(({ data: dataBlob, config: { url: urlArg } }) => ({
     data: Buffer
       .from(dataBlob),
     name: createFileName(urlArg, url),
   }));
+
   const filePath = path.join(dirPath, fileName);
   const directoryPath = path.join(dirPath, dirName);
 
@@ -28,9 +34,11 @@ export default async (url, dirPath) => {
     await fs.mkdir(directoryPath);
   }
 
-  await Promise.all(buffBlobs.map(({ data: dataArg, name }) => {
+  const formattedPaths = await Promise.all(buffBlobs.map(({ data: dataArg, name }) => {
     const fullPath = path.join(directoryPath, name);
-    return fs.writeFile(fullPath, dataArg);
+    const imgPath = path.join(dirName, name);
+    fs.writeFile(fullPath, dataArg);
+    return imgPath;
   }));
 
   await fs.writeFile(filePath, data);

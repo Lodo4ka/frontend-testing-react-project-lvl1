@@ -1,30 +1,45 @@
 import * as fs from 'fs/promises';
 import path from 'path';
 import os from 'os';
+import axios from 'axios';
+import nock from 'nock';
 
 import {
-  describe, it, expect, beforeEach, afterEach,
+  describe, it, expect, beforeEach, afterAll, beforeAll,
 } from '@jest/globals';
 import downloadFile from '../src/downloadPage';
 import createHTMLName from '../src/createHTMLName';
 import createDirectoryName from '../src/createDirectoryName';
 import createFileName from '../src/createFileName';
+import createFileURL from '../src/createFileURL';
+
+axios.defaults.adapter = require('axios/lib/adapters/http');
 
 describe('download page and save in tmp directory', () => {
   const getFixturePath = (filename) => path.join(__dirname, '..', '__fixtures__', filename);
   const readFile = async (pathName) => fs.readFile(pathName, 'utf-8');
+  const readFileBinary = async (pathName) => fs.readFile(pathName, 'binary');
 
   const url = 'https://ru.hexlet.io/courses';
-  const urlCourses = 'https://ru.hexlet.io/programs';
   const coursesHtmlName = 'ru-hexlet-io-courses.html';
-  const programHtmlName = 'ru-hexlet-io-programs.html';
   const formattedFile = 'ru-hexlet-io-courses.html';
-  const directoryName = 'ru-hexlet-io-courses_files';
-  const directoryAssetName = 'ru-hexlet-io-programs_files';
+  const directoryAssetName = 'ru-hexlet-io-courses_files';
   let tmpDir;
+  let htmlPage;
+
+  beforeAll(async () => {
+    nock.disableNetConnect();
+    const pathFixture = getFixturePath(coursesHtmlName);
+    htmlPage = await readFile(pathFixture);
+  });
 
   beforeEach(async () => {
     tmpDir = await fs.mkdtemp(path.join(os.tmpdir(), 'page-loader-'));
+  });
+
+  afterAll(() => {
+    nock.cleanAll();
+    nock.enableNetConnect();
   });
 
   it('create file name by html extension', () => {
@@ -34,7 +49,7 @@ describe('download page and save in tmp directory', () => {
 
   it('create directory name by file name', () => {
     const result = createDirectoryName(url);
-    expect(result).toBe(directoryName);
+    expect(result).toBe(directoryAssetName);
   });
 
   it('create png name by self name and host name', () => {
@@ -44,19 +59,32 @@ describe('download page and save in tmp directory', () => {
     expect(result).toBe(pngName);
   });
 
-  it('download html plain from url', async () => {
-    await downloadFile(url, tmpDir);
-    const directoryPath = await fs.readdir(tmpDir);
-    expect(directoryPath).toContain(formattedFile);
+  it('create png url', () => {
+    const pngName = '/assets/professions/nodejs.png';
+    const result = createFileURL(pngName, url);
+    const urlAnswer = new URL('https://ru.hexlet.io');
+    urlAnswer.pathname = pngName;
+    const answer = urlAnswer.toString();
+    expect(result).toBe(answer);
   });
 
-  it('download all imgs from url', async () => {
-    await downloadFile(urlCourses, tmpDir);
+  it('download html plain, download all imgs from url', async () => {
+    const pngName = '/assets/professions/nodejs.png';
+    const assetPathPng = getFixturePath(pngName);
+    const answerFixture = getFixturePath('ru-hexlet-io-courses-answer.html');
+    const answerFixtureHTml = await readFile(answerFixture);
+    const nodePng = await readFileBinary(assetPathPng);
+    nock('https://ru.hexlet.io').get('/courses').reply(200, htmlPage);
+    nock('https://ru.hexlet.io').get(pngName).reply(200, nodePng);
+
+    await downloadFile(url, tmpDir);
     const assetDir = path.join(tmpDir, directoryAssetName);
-    const resultPath = await fs.readdir(tmpDir);
+    const directoryPath = await fs.readdir(tmpDir);
     const dirAssets = await fs.readdir(assetDir);
-    expect(resultPath).toContain(programHtmlName);
-    expect(resultPath).toContain(directoryAssetName);
-    expect(dirAssets.length).toBeGreaterThan(1);
+    const htmlResult = await readFile(path.join(tmpDir, formattedFile));
+    expect(directoryPath).toContain(formattedFile);
+    expect(dirAssets.length).toEqual(1);
+    expect(dirAssets).toContain('ru-hexlet-io-assets-professions-nodejs.png');
+    expect(htmlResult).toEqual(answerFixtureHTml);
   });
 });
