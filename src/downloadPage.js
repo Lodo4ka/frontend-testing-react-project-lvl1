@@ -41,5 +41,9 @@ export default async (url, dirPath) => {
     return imgPath;
   }));
 
-  await fs.writeFile(filePath, data);
+  $('img').map((i, el) => $(el).attr('src', formattedPaths[i]));
+
+  const htmlData = $.html();
+
+  await fs.writeFile(filePath, htmlData);
 };
