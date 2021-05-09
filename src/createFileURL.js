@@ -13,5 +13,6 @@ export default (name, url) => {
     urlResult.pathname = name;
     return urlResult.toString();
   } catch (e) {
+    throw new Error('non valid url');
   }
 };
