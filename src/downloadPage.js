@@ -1,8 +1,8 @@
 import * as fs from 'fs/promises';
-import axios from 'axios';
 import path from 'path';
 import cheerio from 'cheerio';
 
+import axios from './ajaxService';
 import createHTMLName from './createHTMLName';
 import createDirectoryName from './createDirectoryName';
 import createFileName from './createFileName';

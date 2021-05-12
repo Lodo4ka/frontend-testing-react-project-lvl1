@@ -7,7 +7,7 @@
     "page-loader": "bin/page-loader.js"
   },
   "scripts": {
-    "test-watch": "jest --watch"
+    "test-watch": "DEBUG=nock.* jest --watch --colors"
   },
   "repository": {
     "type": "git",
@@ -36,8 +36,11 @@
   },
   "dependencies": {
     "axios": "^0.21.1",
+    "axios-debug-log": "^0.8.2",
     "cheerio": "^1.0.0-rc.6",
     "commander": "^7.2.0",
+    "debug": "^4.3.1",
+    "dotenv": "^9.0.2",
     "js-beautify": "^1.13.13"
   }
 }

@@ -1,12 +1,13 @@
 import * as fs from 'fs/promises';
 import path from 'path';
 import os from 'os';
-import axios from 'axios';
 import nock from 'nock';
 
 import {
   describe, it, expect, beforeEach, afterAll, beforeAll,
 } from '@jest/globals';
+import axios from '../src/ajaxService';
+
 import downloadFile from '../src/downloadPage';
 import createHTMLName from '../src/createHTMLName';
 import createDirectoryName from '../src/createDirectoryName';
