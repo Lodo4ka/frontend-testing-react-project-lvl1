@@ -2,8 +2,8 @@ import axios from 'axios';
 import { addLogger } from 'axios-debug-log';
 import debug from 'debug';
 
-const ajaxService = axios.create();
+const ajaxConfig = axios.create();
 const ajaxLogger = debug('page-loader');
-addLogger(ajaxService, ajaxLogger);
+addLogger(ajaxConfig, ajaxLogger);
 
-export default ajaxService;
+export default ajaxConfig;

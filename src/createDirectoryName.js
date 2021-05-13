@@ -1,3 +1,5 @@
+import { urlError } from './erros';
+
 export default (path) => {
   try {
     const { hostname, pathname } = new URL(path);
@@ -7,6 +9,6 @@ export default (path) => {
       .join('-');
     return `${fileName}_files`;
   } catch (e) {
-    throw new Error('non valid url');
+    throw urlError;
   }
 };

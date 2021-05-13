@@ -1,3 +1,5 @@
+import { urlError } from './erros';
+
 export default (path, urlHost, ext) => {
   try {
     const extName = ['png', 'css', 'js'];
@@ -10,6 +12,6 @@ export default (path, urlHost, ext) => {
       : fileStrs.join('-');
     return `${fileName}.${ext}`;
   } catch (e) {
-    throw new Error('non valid url');
+    throw urlError;
   }
 };

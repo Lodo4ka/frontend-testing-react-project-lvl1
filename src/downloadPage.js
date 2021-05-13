@@ -2,13 +2,13 @@ import * as fs from 'fs/promises';
 import path from 'path';
 import cheerio from 'cheerio';
 
-import axios from './ajaxService';
 import createHTMLName from './createHTMLName';
 import createDirectoryName from './createDirectoryName';
 import createFileName from './createFileName';
 import createFileURL from './createFileURL';
 import checkOwnDomain from './checkOwnDomain';
 import getExtName from './getExtName';
+import axiosGet from './apiService';
 
 const downloadFiles = async ($, assetName, url, directoryPath, dirName) => {
   const attrFile = assetName === 'link' ? 'href' : 'src';
@@ -22,7 +22,7 @@ const downloadFiles = async ($, assetName, url, directoryPath, dirName) => {
     .map((elem) => createFileURL(elem, url));
   const blobElements = await Promise.all(
     urlsElms
-      .map((urlArg) => axios.get(urlArg, { responseType: 'arraybuffer' })),
+      .map((urlArg) => axiosGet(urlArg, { responseType: 'arraybuffer' })),
   );
   const buffBlobs = blobElements.map(({ data: dataBlob, config: { url: urlArg } }) => ({
     data: Buffer
@@ -51,7 +51,7 @@ export default async (url, dirPath) => {
   const dirName = createDirectoryName(url);
   const filePath = path.join(dirPath, fileName);
   const directoryPath = path.join(dirPath, dirName);
-  const { data } = await axios.get(url);
+  const { data } = await axiosGet(url);
   const $ = cheerio.load(data);
 
   try {

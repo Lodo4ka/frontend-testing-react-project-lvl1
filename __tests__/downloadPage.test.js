@@ -2,13 +2,14 @@ import * as fs from 'fs/promises';
 import path from 'path';
 import os from 'os';
 import nock from 'nock';
-
 import {
   describe, it, expect, beforeEach, afterAll, beforeAll,
 } from '@jest/globals';
-import axios from '../src/ajaxService';
 
-import downloadFile from '../src/downloadPage';
+import axios from '../src/ajaxConfig';
+import axiosGet from '../src/apiService';
+import { urlError, serverError } from '../src/erros';
+import downloadPage from '../src/downloadPage';
 import createHTMLName from '../src/createHTMLName';
 import createDirectoryName from '../src/createDirectoryName';
 import createFileName from '../src/createFileName';
@@ -127,7 +128,7 @@ describe('download page and save in tmp directory', () => {
     const scopeHtml = nock(mainDomain).get('/courses').reply(200, htmlPage);
     const scopePng = nock(mainDomain).get(pngName).reply(200, nodePng);
 
-    await downloadFile(url, tmpDir);
+    await downloadPage(url, tmpDir);
 
     const { directoryPath, assetPath, htmlResult } = await readResult(
       tmpDir,
@@ -164,7 +165,7 @@ describe('download page and save in tmp directory', () => {
     const scopeRoot = nock(mainDomain).get('/').reply(200, htmlPage);
     const scopeHTML = nock(mainDomain).get('/courses').reply(200, htmlPageCourses);
 
-    await downloadFile(urlRoot, tmpDir);
+    await downloadPage(urlRoot, tmpDir);
 
     const { directoryPath, assetPath, htmlResult } = await readResult(
       tmpDir,
@@ -184,5 +185,22 @@ describe('download page and save in tmp directory', () => {
     scopeRoot.done();
     scopeHTML.done();
     assetScopes.forEach((scope) => scope.done());
+  });
+
+  it('error with non-valid URL', async () => {
+    await expect(downloadPage('opa', tmpDir)).rejects.toThrow(urlError);
+  });
+
+  it('error with non-valid URL', async () => {
+    await expect(downloadPage('opa', tmpDir)).rejects.toThrow(urlError);
+  });
+
+  it('500 response status code from url', async () => {
+    const pathFixture = getFixturePath(coursesHtmlName);
+    const htmlPage = await readFile(pathFixture);
+    const scopeHtml = nock(mainDomain).get('/courses').reply(500, htmlPage);
+
+    await expect(axiosGet(url)).rejects.toThrow(serverError);
+    scopeHtml.done();
   });
 });

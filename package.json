@@ -7,7 +7,7 @@
     "page-loader": "bin/page-loader.js"
   },
   "scripts": {
-    "test-watch": "DEBUG=nock.* jest --watch --colors"
+    "test-watch": "jest --watch --colors"
   },
   "repository": {
     "type": "git",

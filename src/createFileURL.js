@@ -1,3 +1,5 @@
+import { urlError } from './erros';
+
 export default (name, url) => {
   function isValidWebUrl(urlArg) {
     const regEx = /^https?:\/\/(?:www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)$/gm;
@@ -13,6 +15,6 @@ export default (name, url) => {
     urlResult.pathname = name;
     return urlResult.toString();
   } catch (e) {
-    throw new Error('non valid url');
+    throw urlError;
   }
 };
