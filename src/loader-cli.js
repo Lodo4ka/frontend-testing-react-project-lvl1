@@ -19,7 +19,7 @@ export default () => {
     .configureOutput({
       writeErr(str) {
         console.error(str);
-        process.exit(1);
+        process.exit(0);
       },
     })
     .parse(process.argv)
