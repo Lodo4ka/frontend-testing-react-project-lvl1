@@ -2,7 +2,6 @@
   "name": "@hexlet/code",
   "version": "1.0.0",
   "description": "[![Actions Status](https://github.com/Lodo4ka/frontend-testing-react-project-lvl1/workflows/hexlet-check/badge.svg)](https://github.com/Lodo4ka/frontend-testing-react-project-lvl1/actions)",
-  "main": "./bin/page-loader.js",
   "bin": {
     "page-loader": "bin/page-loader.js"
   },
