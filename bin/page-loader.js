@@ -2,7 +2,7 @@
 
 import program from 'commander';
 import { config } from 'dotenv';
-import downloadPage from '../src/downloadPage';
+import downloadPage from '../src';
 
 config();
 
