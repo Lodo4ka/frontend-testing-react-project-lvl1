@@ -7,3 +7,8 @@
 ### Download html page and assets file
 [![asciicast](https://asciinema.org/a/1WCb4dRxYy3YL8vyfFW1Glbyz.svg)](https://asciinema.org/a/1WCb4dRxYy3YL8vyfFW1Glbyz)
 
+* [GitHub Actions](https://github.com/features/actions)
+* [jest --coverage](https://jestjs.io/ru/docs/cli#--coverageboolean)
+* [Codecov GitHub Action](https://github.com/codecov/codecov-action)
+
+

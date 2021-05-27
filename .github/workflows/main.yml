@@ -1,0 +1,9 @@
+# BEGIN
+steps:
+- uses: actions/checkout@master
+- uses: codecov/codecov-action@v1
+  with:
+    token: 'ff92b633-d6b3-4620-bf70-6bc19fb5cd56'
+    fail_ci_if_error: true
+    verbose: true
+# END
