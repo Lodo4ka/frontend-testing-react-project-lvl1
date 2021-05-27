@@ -8,7 +8,8 @@
   },
   "scripts": {
     "test-watch": "DEBUG=nock.*  jest --watch",
-    "test" : "DEBUG=nock.*  jest"
+    "test": "jest --colors --runInBand --bail",
+    "test:coverage": "jest --coverage"
   },
   "repository": {
     "type": "git",
