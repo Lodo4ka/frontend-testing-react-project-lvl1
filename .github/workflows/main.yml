@@ -1,9 +1,31 @@
-# BEGIN
-steps:
-- uses: actions/checkout@master
-- uses: codecov/codecov-action@v1
-  with:
-    token: 'ff92b633-d6b3-4620-bf70-6bc19fb5cd56'
-    fail_ci_if_error: true
-    verbose: true
-# END
+name: codeclimate
+on:
+  push:
+    branches:
+      - main
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@master
+    - uses: actions/setup-node@master
+      with:
+          node-version: '14'
+    - run: npm ci
+    - run: npm test
+  coverage:
+    needs: [ test ]
+    name: coverage
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@master
+    - uses: actions/setup-node@master
+      with:
+        node-version: '14'
+    - run: npm ci
+    - uses: paambaati/codeclimate-action@v2.7.5
+      env:
+        CC_TEST_REPORTER_ID: ID
+      with:
+        coverageCommand: npm run test:coverage
+        debug: true

@@ -9,7 +9,7 @@ import {
 import axios from '../src/ajaxConfig';
 import axiosGet from '../src/apiService';
 import { urlError, serverError } from '../src/erros';
-import downloadPage from '../src/downloadPage';
+import downloadPage from '../src/index';
 import createHTMLName from '../src/createHTMLName';
 import createDirectoryName from '../src/createDirectoryName';
 import createFileName from '../src/createFileName';
@@ -114,6 +114,7 @@ describe('download page and save in tmp directory', () => {
     const urlAnswer = new URL(mainDomain);
     urlAnswer.pathname = pngName;
     const answer = urlAnswer.toString();
+    console.log(answer);
     expect(result).toBe(answer);
   });
 
@@ -137,6 +138,7 @@ describe('download page and save in tmp directory', () => {
     );
 
     expect(directoryPath).toContain(htmlCoursesname);
+    console.log(directoryPath);
     expect(htmlResult).toEqual(answerFixtureHTml);
     expect(assetPath.length).toEqual(1);
     expect(assetPath).toContain('ru-hexlet-io-assets-professions-nodejs.png');
