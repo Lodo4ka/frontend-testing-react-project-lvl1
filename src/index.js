@@ -14,7 +14,7 @@ const downloadFiles = async ($, assetName, url, directoryPath, dirName) => {
   const attrFile = assetName === 'link' ? 'href' : 'src';
   const filterAsset = $(assetName).filter((i, elem) => {
     const urlArg = createFileURL($(elem).attr(attrFile), url);
-    return checkOwnDomain(urlArg);
+    return checkOwnDomain(urlArg, url);
   });
   const urlsElms = filterAsset
     .map((i, element) => $(element).attr(attrFile))

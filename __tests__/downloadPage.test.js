@@ -6,18 +6,8 @@ import {
   describe, it, expect, beforeEach, afterAll, beforeAll,
 } from '@jest/globals';
 
-import axios from '../src/ajaxConfig';
-import axiosGet from '../src/apiService';
 import { urlError, serverError } from '../src/erros';
 import downloadPage from '../src/index';
-import createHTMLName from '../src/createHTMLName';
-import createDirectoryName from '../src/createDirectoryName';
-import createFileName from '../src/createFileName';
-import createFileURL from '../src/createFileURL';
-import checkOwnDomain from '../src/checkOwnDomain';
-import getExtName from '../src/getExtName';
-
-axios.defaults.adapter = require('axios/lib/adapters/http');
 
 describe('download page and save in tmp directory', () => {
   const getFixturePath = (filename) => path.join(__dirname, '..', '__fixtures__', filename);
@@ -40,7 +30,6 @@ describe('download page and save in tmp directory', () => {
   const coursesHtmlName = 'ru-hexlet-io-courses.html';
   const htmlCoursesname = 'ru-hexlet-io-courses.html';
   const directoryAssetName = 'ru-hexlet-io-courses_files';
-  const pngURl = 'https://cdn2.hexlet.io/assets/professions/program-f26fba51e364abcd7f15475edb68d93958426d54c75468dc5bc65e493a586226.png';
   const mainDomain = 'https://ru.hexlet.io';
   let tmpDir;
   let assetDir;
@@ -57,65 +46,6 @@ describe('download page and save in tmp directory', () => {
   afterAll(() => {
     nock.cleanAll();
     nock.enableNetConnect();
-  });
-
-  it('create file name by html extension', () => {
-    const result = createHTMLName(url);
-    expect(result).toBe(coursesHtmlName);
-  });
-
-  it('create file name by html extension in root path', () => {
-    const result = createHTMLName(urlRoot);
-    expect(result).toBe('ru-hexlet-io.html');
-  });
-
-  it('create directory name by file name', () => {
-    const result = createDirectoryName(url);
-    expect(result).toBe(directoryAssetName);
-  });
-
-  it('create directory name by file name in root path', () => {
-    const result = createDirectoryName(urlRoot);
-    expect(result).toBe('ru-hexlet-io_files');
-  });
-
-  it('get extension name from url with explicitly extension', () => {
-    const extName = getExtName(pngURl);
-    expect(extName).toBe('png');
-  });
-
-  it('get extension name from url with explicitly no extension', () => {
-    const extName = getExtName(url);
-    expect(extName).toBe('html');
-  });
-
-  it('create png name by self name and host name', () => {
-    const pngName = 'ru-hexlet-io-assets-professions-program-f26fba51e364abcd7f15475edb68d93958426d54c75468dc5bc65e493a586226.png';
-    const result = createFileName(pngURl, url, 'png');
-    expect(result).toBe(pngName);
-  });
-
-  it('create html file by root path without extension', () => {
-    const answer = 'ru-hexlet-io-courses.html';
-    const result = createFileName(url, url, 'html');
-    expect(result).toBe(answer);
-  });
-
-  it('check own domain in url', () => {
-    const resultStripe = checkOwnDomain('https://js.stripe.com/v3/');
-    const resultHexlet = checkOwnDomain('https://ru.hexlet.io/packs/js/runtime.js');
-    expect(resultStripe).toBeFalsy();
-    expect(resultHexlet).toBeTruthy();
-  });
-
-  it('create png url', () => {
-    const pngName = '/assets/professions/nodejs.png';
-    const result = createFileURL(pngName, url);
-    const urlAnswer = new URL(mainDomain);
-    urlAnswer.pathname = pngName;
-    const answer = urlAnswer.toString();
-    console.log(answer);
-    expect(result).toBe(answer);
   });
 
   it('download html plain, download all imgs from url', async () => {
@@ -138,7 +68,6 @@ describe('download page and save in tmp directory', () => {
     );
 
     expect(directoryPath).toContain(htmlCoursesname);
-    console.log(directoryPath);
     expect(htmlResult).toEqual(answerFixtureHTml);
     expect(assetPath.length).toEqual(1);
     expect(assetPath).toContain('ru-hexlet-io-assets-professions-nodejs.png');
@@ -193,16 +122,12 @@ describe('download page and save in tmp directory', () => {
     await expect(downloadPage('opa', tmpDir)).rejects.toThrow(urlError);
   });
 
-  it('error with non-valid URL', async () => {
-    await expect(downloadPage('opa', tmpDir)).rejects.toThrow(urlError);
-  });
-
   it('500 response status code from url', async () => {
     const pathFixture = getFixturePath(coursesHtmlName);
     const htmlPage = await readFile(pathFixture);
     const scopeHtml = nock(mainDomain).get('/courses').reply(500, htmlPage);
 
-    await expect(axiosGet(url)).rejects.toThrow(serverError);
+    await expect(downloadPage(url, tmpDir)).rejects.toThrow(serverError);
     scopeHtml.done();
   });
 });
