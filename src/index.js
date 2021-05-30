@@ -35,15 +35,7 @@ const downloadFiles = async ($, assetName, url, directoryPath, dirName) => {
     fs.writeFile(fullPath, dataArg);
     return elemPath;
   }));
-  filterAsset.map((i, el) => {
-    $(el)
-      .attr(attrFile, updatedElemPaths[i]);
-    if (assetName === 'link') {
-      $(el)
-        .attr('media', 'all');
-    }
-    return el;
-  });
+  filterAsset.map((i, el) => $(el).attr(attrFile, updatedElemPaths[i]));
 };
 
 export default async (url, dirPath) => {
