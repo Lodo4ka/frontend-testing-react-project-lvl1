@@ -38,7 +38,7 @@ const downloadFiles = async ($, assetName, url, directoryPath, dirName) => {
   filterAsset.map((i, el) => $(el).attr(attrFile, updatedElemPaths[i]));
 };
 
-export default async (url, dirPath = '/') => {
+export default async (url, dirPath = process.cwd()) => {
   const fileName = createHTMLName(url);
   const dirName = createDirectoryName(url);
   const filePath = path.join(dirPath, fileName);
