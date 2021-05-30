@@ -11,6 +11,10 @@
     "test": "jest --colors --runInBand --bail",
     "test:coverage": "jest --coverage"
   },
+  "type": "module",
+  "jest": {
+    "testEnvironment": "node"
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/Lodo4ka/frontend-testing-react-project-lvl1.git"

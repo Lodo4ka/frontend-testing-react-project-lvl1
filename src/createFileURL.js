@@ -1,4 +1,4 @@
-import { urlError } from './erros';
+import { urlError } from './erros.js';
 
 export default (name, url) => {
   function isValidWebUrl(urlArg) {

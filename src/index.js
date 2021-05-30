@@ -2,13 +2,13 @@ import * as fs from 'fs/promises';
 import path from 'path';
 import cheerio from 'cheerio';
 
-import createHTMLName from './createHTMLName';
-import createDirectoryName from './createDirectoryName';
-import createFileName from './createFileName';
-import createFileURL from './createFileURL';
-import checkOwnDomain from './checkOwnDomain';
-import getExtName from './getExtName';
-import axiosGet from './apiService';
+import createHTMLName from './createHTMLName.js';
+import createDirectoryName from './createDirectoryName.js';
+import createFileName from './createFileName.js';
+import createFileURL from './createFileURL.js';
+import checkOwnDomain from './checkOwnDomain.js';
+import getExtName from './getExtName.js';
+import axiosGet from './apiService.js';
 
 const downloadFiles = async ($, assetName, url, directoryPath, dirName) => {
   const attrFile = assetName === 'link' ? 'href' : 'src';

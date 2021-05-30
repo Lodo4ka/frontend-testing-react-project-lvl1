@@ -1,5 +1,5 @@
-import { serverError } from './erros';
-import axios from './ajaxConfig';
+import { serverError } from './erros.js';
+import axios from './ajaxConfig.js';
 
 export default async (url, config = {}) => {
   try {
