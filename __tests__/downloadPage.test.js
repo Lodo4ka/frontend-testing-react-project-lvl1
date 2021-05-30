@@ -80,6 +80,7 @@ describe('download page and save in tmp directory', () => {
       '/assets/professions/nodejs.png',
       '/assets/application.css',
       '/packs/js/runtime.js',
+      '/photos/me.jpg',
     ];
     const assetsPaths = await Promise.all(
       assetList.map((asset) => ({ urlAsset: asset, pathAsset: getFixturePath(asset) }))
@@ -95,6 +96,7 @@ describe('download page and save in tmp directory', () => {
     const htmlPageCourses = await readFileBinary(htmlFixture);
     const scopeRoot = nock(mainDomain).get('/').reply(200, htmlPage);
     const scopeHTML = nock(mainDomain).get('/courses').reply(200, htmlPageCourses);
+    const scopeBlogAbout = nock(mainDomain).get('/blog/about').reply(200, htmlPageCourses);
 
     await downloadPage(urlRoot, tmpDir);
 
@@ -105,16 +107,19 @@ describe('download page and save in tmp directory', () => {
     );
     expect(directoryPath).toContain('ru-hexlet-io.html');
     expect(directoryPath).toContain('ru-hexlet-io_files');
-    expect(assetPath.length).toBe(4);
+    expect(assetPath.length).toBe(6);
     expect(assetPath).toEqual([
       'ru-hexlet-io-assets-application.css',
       'ru-hexlet-io-assets-professions-nodejs.png',
+      'ru-hexlet-io-blog-about.html',
       'ru-hexlet-io-courses.html',
       'ru-hexlet-io-packs-js-runtime.js',
+      'ru-hexlet-io-photos-me.jpg',
     ]);
     expect(htmlResult).toEqual(answerFixtureHTml);
     scopeRoot.done();
     scopeHTML.done();
+    scopeBlogAbout.done();
     assetScopes.forEach((scope) => scope.done());
   });
 

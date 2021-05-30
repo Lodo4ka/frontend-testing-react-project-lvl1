@@ -2,7 +2,7 @@ import { urlError } from './erros.js';
 
 export default (path, urlHost, ext) => {
   try {
-    const extName = ['png', 'css', 'js'];
+    const extName = ['png', 'css', 'js', 'jpg'];
     const { pathname } = new URL(path);
     const { hostname } = new URL(urlHost);
     const regexNonCharacter = new RegExp('\\W');
