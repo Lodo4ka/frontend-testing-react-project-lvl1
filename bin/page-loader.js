@@ -1,10 +1,7 @@
 #!/usr/bin/env node
 
 import program from 'commander';
-import { config } from 'dotenv';
 import downloadPage from '../src/index.js';
-
-config();
 
 program
   .description('download all sources from source page')
