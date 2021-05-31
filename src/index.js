@@ -24,17 +24,16 @@ const downloadFiles = async ($, assetName, url, directoryPath, dirName) => {
     urlsElms
       .map((urlArg) => axiosGet(urlArg, { responseType: 'arraybuffer' })),
   );
-  const buffBlobs = blobElements.map(({ data: dataBlob, config: { url: urlArg } }) => ({
-    data: Buffer
-      .from(dataBlob),
-    name: createFileName(urlArg, url, getExtName(urlArg)),
-  }));
-  const updatedElemPaths = await Promise.all(buffBlobs.map(({ data: dataArg, name }) => {
-    const fullPath = path.join(directoryPath, name);
-    const elemPath = path.join(dirName, name);
-    fs.writeFile(fullPath, dataArg);
-    return elemPath;
-  }));
+  const updatedElemPaths = await Promise.all(
+    blobElements
+      .map(({ data, config: { url: urlBlob } }) => {
+        const name = createFileName(urlBlob, url, getExtName(urlBlob));
+        const fullPath = path.join(directoryPath, name);
+        const elemPath = path.join(dirName, name);
+        fs.writeFile(fullPath, data);
+        return elemPath;
+      }),
+  );
   filterAsset.map((i, el) => $(el).attr(attrFile, updatedElemPaths[i]));
 };
 
