@@ -6,7 +6,6 @@ import {
   describe, it, expect, beforeEach, afterAll, beforeAll,
 } from '@jest/globals';
 
-import { urlError, serverError } from '../src/erros';
 import downloadPage from '../src/index';
 
 describe('download page and save in tmp directory', () => {
@@ -121,18 +120,5 @@ describe('download page and save in tmp directory', () => {
     scopeHTML.done();
     scopeBlogAbout.done();
     assetScopes.forEach((scope) => scope.done());
-  });
-
-  it('error with non-valid URL', async () => {
-    await expect(downloadPage('opa', tmpDir)).rejects.toThrow(urlError);
-  });
-
-  it('500 response status code from url', async () => {
-    const pathFixture = getFixturePath(coursesHtmlName);
-    const htmlPage = await readFile(pathFixture);
-    const scopeHtml = nock(mainDomain).get('/courses').reply(500, htmlPage);
-
-    await expect(downloadPage(url, tmpDir)).rejects.toThrow(serverError);
-    scopeHtml.done();
   });
 });
