@@ -38,8 +38,6 @@ const downloadFiles = async ($, assetName, url, directoryPath, dirName) => {
 };
 
 export default async (url, dirPath = process.cwd()) => {
-  console.log('before');
-  console.log(url);
   const fileName = createHTMLName(url);
   const dirName = createDirectoryName(url);
   const filePath = path.join(dirPath, fileName);
@@ -60,9 +58,4 @@ export default async (url, dirPath = process.cwd()) => {
   const htmlData = $.html();
 
   await fs.writeFile(filePath, htmlData);
-  const dataSrc = await fs.readFile(filePath, 'utf8');
-  const dirSrc = await fs.readdir(directoryPath, 'utf8');
-  console.log('after');
-  console.log(dataSrc);
-  console.log(dirSrc);
 };
