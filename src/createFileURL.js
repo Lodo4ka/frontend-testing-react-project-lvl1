@@ -1,10 +1,7 @@
-export default (name, url) => {
-  function isValidWebUrl(urlArg) {
-    const regEx = /^https?:\/\/(?:www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)$/gm;
-    return regEx.test(urlArg);
-  }
+import validURl from 'valid-url';
 
-  if (isValidWebUrl(name)) {
+export default (name, url) => {
+  if (validURl.isWebUri(name)) {
     return name;
   }
 
