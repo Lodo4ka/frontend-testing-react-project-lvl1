@@ -1,6 +1,7 @@
 import * as fs from 'fs/promises';
 import path from 'path';
 import cheerio from 'cheerio';
+import validURl from 'valid-url';
 
 import createHTMLName from './createHTMLName.js';
 import createDirectoryName from './createDirectoryName.js';
@@ -37,13 +38,32 @@ const downloadFiles = async ($, assetName, url, directoryPath, dirName) => {
   filterAsset.map((i, el) => $(el).attr(attrFile, updatedElemPaths[i]));
 };
 
+const checkDirectory = async (path) => {
+  try {
+    await fs.access(path);
+    return true;
+  } catch (error) {
+    return false;
+  }
+};
+
 export default async (url, dirPath = process.cwd()) => {
-  console.log('url', url);
+  if (!validURl.isWebUri(url)) {
+    throw new Error(`Invalid url: ${url}`);
+  }
+  if (!await checkDirectory(dirPath)) {
+    throw new Error(`No permissions to write to ${dirPath}`);
+  }
+
   const fileName = createHTMLName(url);
   const dirName = createDirectoryName(url);
   const filePath = path.join(dirPath, fileName);
   const directoryPath = path.join(dirPath, dirName);
-  const { data } = await axiosGet(url);
+  const { data, status } = await axiosGet(url);
+
+  if (status !== 200) {
+    throw new Error(`Request failed, status code: ${status}`);
+  }
   const $ = cheerio.load(data);
 
   try {
