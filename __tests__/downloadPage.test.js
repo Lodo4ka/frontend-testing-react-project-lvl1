@@ -47,7 +47,7 @@ describe('download page and save in tmp directory', () => {
     const scopeHtml = nock(mainDomain).get('/courses').reply(200, htmlPage);
     const scopePng = nock(mainDomain).get(pngName).reply(200, nodePng);
 
-    await expect(downloadPage(url, tmpDir)).resolves.not.toThrow();
+    await downloadPage(url, tmpDir);
 
     await expect(fs.access(path.join(tmpDir, htmlCoursesname))).resolves.not.toThrow();
     const directoryPath = await fs.readdir(tmpDir);
@@ -85,7 +85,7 @@ describe('download page and save in tmp directory', () => {
     const scopeHTML = nock(mainDomain).get('/courses').reply(200, htmlPageCourses);
     const scopeBlogAbout = nock(mainDomain).get('/blog/about').reply(200, htmlPageCourses);
 
-    await expect(downloadPage(urlRoot, tmpDir)).resolves.not.toThrow();
+    await downloadPage(urlRoot, tmpDir);
     await expect(fs.access(path.join(tmpDir, 'ru-hexlet-io.html'))).resolves.not.toThrow();
     const directoryPath = await fs.readdir(tmpDir);
     const assetPath = await fs.readdir(rootAssetDir);
