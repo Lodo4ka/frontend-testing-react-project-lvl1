@@ -2,11 +2,8 @@ import * as fs from 'fs/promises';
 import path from 'path';
 import os from 'os';
 import nock from 'nock';
-import {
-  describe, it, expect, beforeEach, afterAll, beforeAll,
-} from '@jest/globals';
 
-import downloadPage from '../src/index';
+import downloadPage from '../src/index.js';
 
 describe('download page and save in tmp directory', () => {
   const getFixturePath = (filename) => path.join(__dirname, '..', '__fixtures__', filename);
