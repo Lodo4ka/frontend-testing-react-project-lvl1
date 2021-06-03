@@ -33,7 +33,7 @@ describe('download page and save in tmp directory', () => {
     nock.enableNetConnect();
   });
 
-  it('download html plain, download all imgs from url', async () => {
+  test('download html plain, download all imgs from url', async () => {
     const pathFixture = getFixturePath(coursesHtmlName);
     const htmlPage = await readFile(pathFixture);
     const pngName = '/assets/professions/nodejs.png';
