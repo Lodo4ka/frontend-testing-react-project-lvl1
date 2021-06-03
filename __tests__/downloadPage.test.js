@@ -13,17 +13,6 @@ describe('download page and save in tmp directory', () => {
   const readFile = async (pathName) => fs.readFile(pathName, 'utf-8');
   const readFileBinary = async (pathName) => fs.readFile(pathName, 'binary');
 
-  const readResult = async (tmpDir, assetDir, htmlFile) => {
-    const directoryPath = await fs.readdir(tmpDir);
-    const assetPath = await fs.readdir(assetDir);
-    const htmlResult = await readFile(path.join(tmpDir, htmlFile));
-    return {
-      directoryPath,
-      assetPath,
-      htmlResult,
-    };
-  };
-
   const url = 'https://ru.hexlet.io/courses';
   const urlRoot = 'https://ru.hexlet.io';
   const coursesHtmlName = 'ru-hexlet-io-courses.html';
@@ -60,11 +49,10 @@ describe('download page and save in tmp directory', () => {
 
     await downloadPage(url, tmpDir);
 
-    const { directoryPath, assetPath, htmlResult } = await readResult(
-      tmpDir,
-      assetDir,
-      htmlCoursesname,
-    );
+    await expect(fs.access(path.join(tmpDir, htmlCoursesname))).resolves.not.toThrow();
+    const directoryPath = await fs.readdir(tmpDir);
+    const assetPath = await fs.readdir(assetDir);
+    const htmlResult = await readFile(path.join(tmpDir, htmlCoursesname));
 
     expect(directoryPath).toContain(htmlCoursesname);
     expect(htmlResult).toEqual(answerFixtureHTml);
@@ -98,14 +86,11 @@ describe('download page and save in tmp directory', () => {
     const scopeBlogAbout = nock(mainDomain).get('/blog/about').reply(200, htmlPageCourses);
 
     await downloadPage(urlRoot, tmpDir);
-
-    const { directoryPath, assetPath, htmlResult } = await readResult(
-      tmpDir,
-      rootAssetDir,
-      'ru-hexlet-io.html',
-    );
+    await expect(fs.access(path.join(tmpDir, 'ru-hexlet-io.html'))).resolves.not.toThrow();
+    const directoryPath = await fs.readdir(tmpDir);
+    const assetPath = await fs.readdir(rootAssetDir);
+    const htmlResult = await readFile(path.join(tmpDir, 'ru-hexlet-io.html'));
     expect(directoryPath).toContain('ru-hexlet-io.html');
-    expect(directoryPath).toContain('ru-hexlet-io_files');
     expect(assetPath.length).toBe(6);
     expect(assetPath).toEqual([
       'ru-hexlet-io-assets-application.css',

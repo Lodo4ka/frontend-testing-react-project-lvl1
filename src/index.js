@@ -38,6 +38,7 @@ const downloadFiles = async ($, assetName, url, directoryPath, dirName) => {
 };
 
 export default async (url, dirPath = process.cwd()) => {
+  console.log('url', url);
   const fileName = createHTMLName(url);
   const dirName = createDirectoryName(url);
   const filePath = path.join(dirPath, fileName);
