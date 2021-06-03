@@ -59,48 +59,48 @@ describe('download page and save in tmp directory', () => {
     scopePng.done();
   });
 
-  it('download all url sources from imgs, links, scripts', async () => {
-    const assetList = [
-      '/assets/professions/nodejs.png',
-      '/assets/application.css',
-      '/packs/js/runtime.js',
-      '/photos/me.jpg',
-    ];
-    const assetsPaths = await Promise.all(
-      assetList.map((asset) => ({ urlAsset: asset, pathAsset: getFixturePath(asset) }))
-        .map(async ({ urlAsset, pathAsset }) => ({ urlAsset, data: readFileBinary(pathAsset) })),
-    );
-    const answerFixture = getFixturePath('ru-hexlet-io-courses-2-answer.html');
-    const answerFixtureHTml = await readFile(answerFixture);
-    const assetScopes = assetsPaths
-      .map(({ urlAsset, data }) => nock(mainDomain).get(urlAsset).reply(200, data));
-    const rootAssetDir = path.join(tmpDir, 'ru-hexlet-io_files');
-    const htmlFixture = getFixturePath('ru-hexlet-io-courses-2.html');
-    const htmlPage = await readFile(htmlFixture);
-    const htmlPageCourses = await readFileBinary(htmlFixture);
-    const scopeRoot = nock(mainDomain).get('/').reply(200, htmlPage);
-    const scopeHTML = nock(mainDomain).get('/courses').reply(200, htmlPageCourses);
-    const scopeBlogAbout = nock(mainDomain).get('/blog/about').reply(200, htmlPageCourses);
+  // it('download all url sources from imgs, links, scripts', async () => {
+  //   const assetList = [
+  //     '/assets/professions/nodejs.png',
+  //     '/assets/application.css',
+  //     '/packs/js/runtime.js',
+  //     '/photos/me.jpg',
+  //   ];
+  //   const assetsPaths = await Promise.all(
+  //     assetList.map((asset) => ({ urlAsset: asset, pathAsset: getFixturePath(asset) }))
+  //       .map(async ({ urlAsset, pathAsset }) => ({ urlAsset, data: readFileBinary(pathAsset) })),
+  //   );
+  //   const answerFixture = getFixturePath('ru-hexlet-io-courses-2-answer.html');
+  //   const answerFixtureHTml = await readFile(answerFixture);
+  //   const assetScopes = assetsPaths
+  //     .map(({ urlAsset, data }) => nock(mainDomain).get(urlAsset).reply(200, data));
+  //   const rootAssetDir = path.join(tmpDir, 'ru-hexlet-io_files');
+  //   const htmlFixture = getFixturePath('ru-hexlet-io-courses-2.html');
+  //   const htmlPage = await readFile(htmlFixture);
+  //   const htmlPageCourses = await readFileBinary(htmlFixture);
+  //   const scopeRoot = nock(mainDomain).get('/').reply(200, htmlPage);
+  //   const scopeHTML = nock(mainDomain).get('/courses').reply(200, htmlPageCourses);
+  //   const scopeBlogAbout = nock(mainDomain).get('/blog/about').reply(200, htmlPageCourses);
 
-    await downloadPage(urlRoot, tmpDir);
-    await expect(fs.access(path.join(tmpDir, 'ru-hexlet-io.html'))).resolves.not.toThrow();
-    const directoryPath = await fs.readdir(tmpDir);
-    const assetPath = await fs.readdir(rootAssetDir);
-    const htmlResult = await readFile(path.join(tmpDir, 'ru-hexlet-io.html'));
-    expect(directoryPath).toContain('ru-hexlet-io.html');
-    expect(assetPath.length).toBe(6);
-    expect(assetPath).toEqual([
-      'ru-hexlet-io-assets-application.css',
-      'ru-hexlet-io-assets-professions-nodejs.png',
-      'ru-hexlet-io-blog-about.html',
-      'ru-hexlet-io-courses.html',
-      'ru-hexlet-io-packs-js-runtime.js',
-      'ru-hexlet-io-photos-me.jpg',
-    ]);
-    expect(htmlResult).toEqual(answerFixtureHTml);
-    scopeRoot.done();
-    scopeHTML.done();
-    scopeBlogAbout.done();
-    assetScopes.forEach((scope) => scope.done());
-  });
+  //   await downloadPage(urlRoot, tmpDir);
+  //   await expect(fs.access(path.join(tmpDir, 'ru-hexlet-io.html'))).resolves.not.toThrow();
+  //   const directoryPath = await fs.readdir(tmpDir);
+  //   const assetPath = await fs.readdir(rootAssetDir);
+  //   const htmlResult = await readFile(path.join(tmpDir, 'ru-hexlet-io.html'));
+  //   expect(directoryPath).toContain('ru-hexlet-io.html');
+  //   expect(assetPath.length).toBe(6);
+  //   expect(assetPath).toEqual([
+  //     'ru-hexlet-io-assets-application.css',
+  //     'ru-hexlet-io-assets-professions-nodejs.png',
+  //     'ru-hexlet-io-blog-about.html',
+  //     'ru-hexlet-io-courses.html',
+  //     'ru-hexlet-io-packs-js-runtime.js',
+  //     'ru-hexlet-io-photos-me.jpg',
+  //   ]);
+  //   expect(htmlResult).toEqual(answerFixtureHTml);
+  //   scopeRoot.done();
+  //   scopeHTML.done();
+  //   scopeBlogAbout.done();
+  //   assetScopes.forEach((scope) => scope.done());
+  // });
 });
