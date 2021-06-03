@@ -11,12 +11,7 @@ program
   .action(async (url) => {
     const opts = program.opts();
     const dirPath = opts.output;
-    try {
-      await downloadPage(url, dirPath);
-      console.log('page has been downloaded');
-    } catch (e) {
-      console.error(e.message);
-      process.exit(1);
-    }
+    await downloadPage(url, dirPath);
+    console.log('page has been downloaded');
   })
   .parse(process.argv);
