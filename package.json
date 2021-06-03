@@ -6,14 +6,14 @@
   "bin": {
     "page-loader": "bin/page-loader.js"
   },
+  "engines": {
+    "node": ">=14"
+  },
   "scripts": {
     "test-watch": "DEBUG=nock.*  jest --watch",
     "test": "jest --colors --runInBand --bail",
     "test:coverage": "jest --coverage"
   },
-  "files": [
-    "dist"
-  ],
   "type": "module",
   "jest": {
     "testEnvironment": "node"
