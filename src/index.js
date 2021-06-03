@@ -10,9 +10,6 @@ import createFileURL from './createFileURL.js';
 import checkOwnDomain from './checkOwnDomain.js';
 import getExtName from './getExtName.js';
 
-// don't throw exception on 4xx and 5xx
-axios.defaults.validateStatus = () => true;
-
 const downloadFiles = async ($, assetName, url, directoryPath, dirName) => {
   const attrFile = assetName === 'link' ? 'href' : 'src';
   const filterAsset = $(assetName).filter((i, elem) => {
