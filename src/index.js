@@ -38,41 +38,18 @@ const downloadFiles = async ($, assetName, url, directoryPath, dirName) => {
   filterAsset.map((i, el) => $(el).attr(attrFile, updatedElemPaths[i]));
 };
 
-const checkDirectory = async (pathDir) => {
-  try {
-    await fs.access(pathDir);
-    return true;
-  } catch (error) {
-    return false;
-  }
-};
-
 export default async (url, dirPath = process.cwd()) => {
   console.log('url', url);
   console.log('dirPath', dirPath);
-  if (!validURl.isWebUri(url)) {
-    throw new Error(`Invalid url: ${url}`);
-  }
-  if (!await checkDirectory(dirPath)) {
-    throw new Error(`No permissions to write to ${dirPath}`);
-  }
 
   const fileName = createHTMLName(url);
   const dirName = createDirectoryName(url);
   const filePath = path.join(dirPath, fileName);
   const directoryPath = path.join(dirPath, dirName);
-  const { data, status } = await axiosGet(url);
+  const { data } = await axiosGet(url);
 
-  if (status !== 200) {
-    throw new Error(`Request failed, status code: ${status}`);
-  }
   const $ = cheerio.load(data);
-
-  try {
-    await fs.access(directoryPath);
-  } catch (e) {
-    await fs.mkdir(directoryPath);
-  }
+  await fs.mkdir(directoryPath);
 
   await downloadFiles($, 'img', url, directoryPath, dirName);
   await downloadFiles($, 'script', url, directoryPath, dirName);
