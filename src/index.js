@@ -1,7 +1,6 @@
 import * as fs from 'fs/promises';
 import path from 'path';
 import cheerio from 'cheerio';
-import validURl from 'valid-url';
 
 import createHTMLName from './createHTMLName.js';
 import createDirectoryName from './createDirectoryName.js';
