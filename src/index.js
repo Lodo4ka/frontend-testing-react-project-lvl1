@@ -38,9 +38,9 @@ const downloadFiles = async ($, assetName, url, directoryPath, dirName) => {
   filterAsset.map((i, el) => $(el).attr(attrFile, updatedElemPaths[i]));
 };
 
-const checkDirectory = async (path) => {
+const checkDirectory = async (pathDir) => {
   try {
-    await fs.access(path);
+    await fs.access(pathDir);
     return true;
   } catch (error) {
     return false;
@@ -48,6 +48,8 @@ const checkDirectory = async (path) => {
 };
 
 export default async (url, dirPath = process.cwd()) => {
+  console.log('url', url);
+  console.log('dirPath', dirPath);
   if (!validURl.isWebUri(url)) {
     throw new Error(`Invalid url: ${url}`);
   }
