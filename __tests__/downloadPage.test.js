@@ -9,6 +9,14 @@ describe('download page and save in tmp directory', () => {
   const getFixturePath = (filename) => path.join(__dirname, '..', '__fixtures__', filename);
   const readFile = async (pathName) => fs.readFile(pathName, 'utf-8');
   const readFileBinary = async (pathName) => fs.readFile(pathName, 'binary');
+  const readHTML = async (pathName) => {
+    const pathFixture = getFixturePath(pathName);
+    return readFile(pathFixture);
+  };
+  const readAssets = async (pathName) => {
+    const pathFixture = getFixturePath(pathName);
+    return readFileBinary(pathFixture);
+  };
 
   const url = 'https://ru.hexlet.io/courses';
   const urlRoot = 'https://ru.hexlet.io';
@@ -34,19 +42,17 @@ describe('download page and save in tmp directory', () => {
   });
 
   test('download html plain, download all imgs from url', async () => {
-    const pathFixture = getFixturePath(coursesHtmlName);
-    const htmlPage = await readFile(pathFixture);
     const pngName = '/assets/professions/nodejs.png';
-    const assetPathPng = getFixturePath(pngName);
-    const answerFixture = getFixturePath('ru-hexlet-io-courses-answer.html');
-    const answerFixtureHTml = await readFile(answerFixture);
-    const nodePng = await readFileBinary(assetPathPng);
+    const htmlPage = await readHTML(coursesHtmlName);
+    const answerFixtureHTml = await readHTML('ru-hexlet-io-courses-answer.html');
+    const nodePng = await readAssets(pngName);
     const scopeHtml = nock(mainDomain).get('/courses').reply(200, htmlPage);
     const scopePng = nock(mainDomain).get(pngName).reply(200, nodePng);
 
     await downloadPage(url, tmpDir);
 
     await expect(fs.access(path.join(tmpDir, htmlCoursesname))).resolves.not.toThrow();
+
     const directoryPath = await fs.readdir(tmpDir);
     const assetPath = await fs.readdir(assetDir);
     const htmlResult = await readFile(path.join(tmpDir, htmlCoursesname));
