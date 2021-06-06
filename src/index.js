@@ -47,7 +47,7 @@ export default async (url, dirPath = process.cwd()) => {
 
   const $ = cheerio.load(data);
   await fs.mkdir(directoryPath);
-  console.log('html', $.toString());
+  console.log('html', $.html());
 
   await downloadFiles($, 'img', url, directoryPath, dirName);
   await downloadFiles($, 'script', url, directoryPath, dirName);
