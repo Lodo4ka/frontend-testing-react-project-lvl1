@@ -19,7 +19,6 @@ describe('download page and save in tmp directory', () => {
   };
 
   const url = 'https://ru.hexlet.io/courses';
-  const urlRoot = 'https://ru.hexlet.io';
   const coursesHtmlName = 'ru-hexlet-io-courses.html';
   const htmlCoursesname = 'ru-hexlet-io-courses.html';
   const directoryAssetName = 'ru-hexlet-io-courses_files';
@@ -62,7 +61,5 @@ describe('download page and save in tmp directory', () => {
     expect(htmlResult).toEqual(answerFixtureHTml);
     expect(assetPath.length).toEqual(1);
     expect(assetPath).toContain('ru-hexlet-io-assets-professions-nodejs.png');
-    scopeHtml.done();
-    scopePng.done();
   });
 });
