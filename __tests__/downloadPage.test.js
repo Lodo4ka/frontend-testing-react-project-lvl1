@@ -82,4 +82,13 @@ describe('download page and save in tmp directory', () => {
     expect(directoryAsset).toContain('localhost-blog-about.html');
     expect(directoryAsset).toContain('localhost-assets-scripts.js');
   });
+  test.each([404, 500])('server %s error', (code) => {
+    nock('https://site.com').get('/foo').reply(code);
+    return expect(downloadPage('https://site.com/foo')).rejects.toThrow();
+  });
+  test('access error', async () => {
+    const html = await readFixture('site-com-blog-about.html');
+    nock('https://site.com').get('/foo').reply(200, html);
+    return expect(downloadPage('https://site.com/foo', '/foo')).rejects.toThrow();
+  });
 });
