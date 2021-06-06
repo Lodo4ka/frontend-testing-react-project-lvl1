@@ -71,7 +71,15 @@ describe('download page and save in tmp directory', () => {
       .get('/blog/about/assets/styles.css')
       .reply(200, css);
     await downloadPage('http://localhost/blog/about', tmpDir);
+    const directory = await fs.readdir(tmpDir);
+    const directoryAsset = await fs.readdir(path.join(tmpDir, 'localhost-blog-about_files'));
     const result = await readFile(path.join(tmpDir, 'localhost-blog-about.html'));
     expect(result).toEqual(htmlAnswer);
+    expect(directory).toContain('localhost-blog-about.html');
+    expect(directory).toContain('localhost-blog-about_files');
+    expect(directoryAsset).toContain('localhost-photos-me.jpg');
+    expect(directoryAsset).toContain('localhost-blog-about-assets-styles.css');
+    expect(directoryAsset).toContain('localhost-blog-about.html');
+    expect(directoryAsset).toContain('localhost-assets-scripts.js');
   });
 });
