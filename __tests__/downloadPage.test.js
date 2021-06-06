@@ -18,11 +18,8 @@ describe('download page and save in tmp directory', () => {
     tmpDir = await fs.mkdtemp(path.join(os.tmpdir(), 'page-loader-'));
   });
 
-  afterEach(() => {
-    nock.cleanAll();
-  });
-
   afterAll(() => {
+    nock.cleanAll();
     nock.enableNetConnect();
   });
 
@@ -56,25 +53,25 @@ describe('download page and save in tmp directory', () => {
     expect(directoryAsset).toContain('site-com-assets-scripts.js');
   });
 
-  // test('download page from  https://site.com', async () => {
-  //   const htmlPage = await readFixture('site-com-blog-about.html');
-  //   const jpg = await readFixture('site-com-photos-me.jpg');
-  //   const css = await readFixture('site-com-blog-about-assets-styles.css');
-  //   const js = await readFixture('site-com-assets-scripts.js');
-  //   const htmlAnswer = await readFixture('/expected/site-com-blog-about.html');
-  //   nock('https://site.com')
-  //     .get('/blog/about')
-  //     .reply(200, htmlPage)
-  //     .get('/blog/about')
-  //     .reply(200, htmlPage)
-  //     .get('/photos/me.jpg')
-  //     .reply(200, jpg)
-  //     .get('/assets/scripts.js')
-  //     .reply(200, js)
-  //     .get('/blog/about/assets/styles.css')
-  //     .reply(200, css);
-  //   await downloadPage('https://site.com/blog/about', tmpDir);
-  //   const result = await readFile(path.join(tmpDir, 'site-com-blog-about.html'));
-  //   expect(result).toEqual(htmlAnswer);
-  // });
+  test('download page from  localhost', async () => {
+    const htmlPage = await readFixture('localhost-blog-about.html');
+    const jpg = await readFixture('localhost-photos-me.jpg');
+    const css = await readFixture('localhost-blog-about-assets-styles.css');
+    const js = await readFixture('localhost-assets-scripts.js');
+    const htmlAnswer = await readFixture('/expected/localhost-blog-about.html');
+    nock('http://localhost')
+      .get('/blog/about')
+      .reply(200, htmlPage)
+      .get('/blog/about')
+      .reply(200, htmlPage)
+      .get('/photos/me.jpg')
+      .reply(200, jpg)
+      .get('/assets/scripts.js')
+      .reply(200, js)
+      .get('/blog/about/assets/styles.css')
+      .reply(200, css);
+    await downloadPage('http://localhost/blog/about', tmpDir);
+    const result = await readFile(path.join(tmpDir, 'localhost-blog-about.html'));
+    expect(result).toEqual(htmlAnswer);
+  });
 });
