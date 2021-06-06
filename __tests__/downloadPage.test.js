@@ -49,6 +49,7 @@ describe('download page and save in tmp directory', () => {
     const scopeHtml = nock(mainDomain).get('/courses').reply(200, htmlPage);
     const scopePng = nock(mainDomain).get(pngName).reply(200, nodePng);
 
+    console.log(downloadPage.toString());
     await downloadPage(url, tmpDir);
 
     await expect(fs.access(path.join(tmpDir, htmlCoursesname))).resolves.not.toThrow();
