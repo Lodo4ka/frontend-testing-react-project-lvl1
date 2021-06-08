@@ -1,4 +1,5 @@
 import * as fs from 'fs/promises';
+import { existsSync } from 'fs';
 import path from 'path';
 import os from 'os';
 import nock from 'nock';
@@ -41,9 +42,21 @@ describe('download page and save in tmp directory', () => {
       .get('/blog/about/assets/styles.css')
       .reply(200, css);
     await downloadPage('https://site.com/blog/about', tmpDir);
+    const resultJpg = path.join(tmpDir, 'site-com-blog-about_files/site-com-photos-me.jpg');
+    const resultCss = path.join(tmpDir, 'site-com-blog-about_files/site-com-blog-about-assets-styles.css');
+    const resultJs = path.join(tmpDir, 'site-com-blog-about_files/site-com-assets-scripts.js');
+    const resultHtml = path.join(tmpDir, 'site-com-blog-about_files/site-com-blog-about.html');
     const result = await readFile(path.join(tmpDir, 'site-com-blog-about.html'));
     const directory = await fs.readdir(tmpDir);
     const directoryAsset = await fs.readdir(path.join(tmpDir, 'site-com-blog-about_files'));
+    expect(existsSync(resultJpg)).toBeTruthy();
+    expect(await readFile(resultJpg)).toEqual(jpg);
+    expect(existsSync(resultCss)).toBeTruthy();
+    expect(await readFile(resultCss)).toEqual(css);
+    expect(existsSync(resultJs)).toBeTruthy();
+    expect(await readFile(resultJs)).toEqual(js);
+    expect(existsSync(resultHtml)).toBeTruthy();
+    expect(await readFile(resultHtml)).toEqual(htmlPage);
     expect(result).toEqual(htmlAnswer);
     expect(directory).toContain('site-com-blog-about.html');
     expect(directory).toContain('site-com-blog-about_files');
@@ -71,9 +84,21 @@ describe('download page and save in tmp directory', () => {
       .get('/blog/about/assets/styles.css')
       .reply(200, css);
     await downloadPage('http://localhost/blog/about', tmpDir);
+    const resultJpg = path.join(tmpDir, 'localhost-blog-about_files/localhost-photos-me.jpg');
+    const resultCss = path.join(tmpDir, 'localhost-blog-about_files/localhost-blog-about-assets-styles.css');
+    const resultJs = path.join(tmpDir, 'localhost-blog-about_files/localhost-assets-scripts.js');
+    const resultHtml = path.join(tmpDir, 'localhost-blog-about_files/localhost-blog-about.html');
     const directory = await fs.readdir(tmpDir);
     const directoryAsset = await fs.readdir(path.join(tmpDir, 'localhost-blog-about_files'));
     const result = await readFile(path.join(tmpDir, 'localhost-blog-about.html'));
+    expect(existsSync(resultJpg)).toBeTruthy();
+    expect(await readFile(resultJpg)).toEqual(jpg);
+    expect(existsSync(resultCss)).toBeTruthy();
+    expect(await readFile(resultCss)).toEqual(css);
+    expect(existsSync(resultJs)).toBeTruthy();
+    expect(await readFile(resultJs)).toEqual(js);
+    expect(existsSync(resultHtml)).toBeTruthy();
+    expect(await readFile(resultHtml)).toEqual(htmlPage);
     expect(result).toEqual(htmlAnswer);
     expect(directory).toContain('localhost-blog-about.html');
     expect(directory).toContain('localhost-blog-about_files');
