@@ -41,7 +41,9 @@ describe('download page and save in tmp directory', () => {
 
     it('download html from site.com', async () => {
       await downloadPage('https://site.com/blog/about', tmpDir);
-      const result = await readFile(path.join(tmpDir, 'site-com-blog-about.html'));
+      const resultPath = path.join(tmpDir, 'site-com-blog-about.html');
+      expect(existsSync(resultPath)).toBeTruthy();
+      const result = await readFile(resultPath);
       const htmlAnswer = await readFixture('/expected/site-com-blog-about.html');
       const directory = await fs.readdir(tmpDir);
       expect(directory).toContain('site-com-blog-about.html');
