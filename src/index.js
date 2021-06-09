@@ -2,38 +2,38 @@ import * as fs from 'fs/promises';
 import path from 'path';
 import cheerio from 'cheerio';
 import axios from 'axios';
+import debug from 'debug';
 
 import createHTMLName from './createHTMLName.js';
 import createDirectoryName from './createDirectoryName.js';
 import createFileName from './createFileName.js';
-import createFileURL from './createFileURL.js';
 import checkOwnDomain from './checkOwnDomain.js';
 import getExtName from './getExtName.js';
 
-const downloadFiles = async ($, assetName, url, directoryPath, dirName) => {
+const log = debug('page-loader');
+
+const downloadFiles = async ($, assetName, url, directoryPathToSave, dirToSaveName) => {
   const attrFile = assetName === 'link' ? 'href' : 'src';
   const filterAsset = $(assetName).filter((i, elem) => {
-    const urlArg = createFileURL($(elem).attr(attrFile), url);
+    const urlArg = new URL($(elem).attr(attrFile), url);
     return checkOwnDomain(urlArg, url);
   });
-  const urlsElms = filterAsset
+  const urlElms = filterAsset
     .map((i, element) => $(element).attr(attrFile))
     .toArray()
-    .map((elem) => createFileURL(elem, url));
+    .map((elem) => new URL(elem, url).toString());
   const blobElements = await Promise.all(
-    urlsElms
+    urlElms
       .map((urlArg) => axios(urlArg, { responseType: 'arraybuffer' })),
   );
-  const updatedElemPaths = await Promise.all(
-    blobElements
-      .map(({ data, config: { url: urlBlob } }) => {
-        const name = createFileName(urlBlob, url, getExtName(urlBlob));
-        const fullPath = path.join(directoryPath, name);
-        const elemPath = path.join(dirName, name);
-        fs.writeFile(fullPath, data);
-        return elemPath;
-      }),
-  );
+  const names = blobElements
+    .map(({ config: { url: urlBlob } }) => createFileName(urlBlob, url, getExtName(urlBlob)));
+  const destinationPaths = names.map((name) => path.join(directoryPathToSave, name));
+  const updatedElemPaths = names.map((name) => path.join(dirToSaveName, name));
+  await Promise.all(blobElements.map(async ({ data }, index) => {
+    await fs.writeFile(destinationPaths[index], data);
+    log('file %s was save', destinationPaths[index]);
+  }));
   filterAsset.map((i, el) => $(el).attr(attrFile, updatedElemPaths[i]));
 };
 

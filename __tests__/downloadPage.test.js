@@ -10,13 +10,8 @@ const readFile = async (pathName) => fs.readFile(pathName, 'utf-8');
 const readFixture = async (pathFixture) => readFile(path.join(__dirname, '..', '__fixtures__', pathFixture));
 
 describe('download page and save in tmp directory', () => {
-  let tmpDir;
   beforeAll(async () => {
     nock.disableNetConnect();
-  });
-
-  beforeEach(async () => {
-    tmpDir = await fs.mkdtemp(path.join(os.tmpdir(), 'page-loader-'));
   });
 
   afterAll(() => {
@@ -24,96 +19,56 @@ describe('download page and save in tmp directory', () => {
     nock.enableNetConnect();
   });
 
-  test('download page from  https://site.com', async () => {
-    const htmlPage = await readFixture('site-com-blog-about.html');
-    const jpg = await readFixture('site-com-photos-me.jpg');
-    const css = await readFixture('site-com-blog-about-assets-styles.css');
-    const js = await readFixture('site-com-assets-scripts.js');
-    const htmlAnswer = await readFixture('/expected/site-com-blog-about.html');
-    nock('https://site.com')
-      .get('/blog/about')
-      .reply(200, htmlPage)
-      .get('/blog/about')
-      .reply(200, htmlPage)
-      .get('/photos/me.jpg')
-      .reply(200, jpg)
-      .get('/assets/scripts.js')
-      .reply(200, js)
-      .get('/blog/about/assets/styles.css')
-      .reply(200, css);
-    await downloadPage('https://site.com/blog/about', tmpDir);
-    const resultJpg = path.join(tmpDir, 'site-com-blog-about_files/site-com-photos-me.jpg');
-    const resultCss = path.join(tmpDir, 'site-com-blog-about_files/site-com-blog-about-assets-styles.css');
-    const resultJs = path.join(tmpDir, 'site-com-blog-about_files/site-com-assets-scripts.js');
-    const resultHtml = path.join(tmpDir, 'site-com-blog-about_files/site-com-blog-about.html');
-    const result = await readFile(path.join(tmpDir, 'site-com-blog-about.html'));
-    const directory = await fs.readdir(tmpDir);
-    const directoryAsset = await fs.readdir(path.join(tmpDir, 'site-com-blog-about_files'));
-    expect(existsSync(resultJpg)).toBeTruthy();
-    expect(await readFile(resultJpg)).toEqual(jpg);
-    expect(existsSync(resultCss)).toBeTruthy();
-    expect(await readFile(resultCss)).toEqual(css);
-    expect(existsSync(resultJs)).toBeTruthy();
-    expect(await readFile(resultJs)).toEqual(js);
-    expect(existsSync(resultHtml)).toBeTruthy();
-    expect(await readFile(resultHtml)).toEqual(htmlPage);
-    expect(result).toEqual(htmlAnswer);
-    expect(directory).toContain('site-com-blog-about.html');
-    expect(directory).toContain('site-com-blog-about_files');
-    expect(directoryAsset).toContain('site-com-photos-me.jpg');
-    expect(directoryAsset).toContain('site-com-blog-about-assets-styles.css');
-    expect(directoryAsset).toContain('site-com-blog-about.html');
-    expect(directoryAsset).toContain('site-com-assets-scripts.js');
-  });
+  describe('positive cases download page', () => {
+    let tmpDir;
+    const assets = ['site-com-blog-about.html', 'site-com-photos-me.jpg', 'site-com-blog-about-assets-styles.css', 'site-com-assets-scripts.js'];
+    beforeEach(async () => {
+      const url = 'https://site.com';
+      const urlAssets = [
+        { urlAsset: '/blog/about', asset: '/expected/site-com-blog-about.html' },
+        { urlAsset: '/photos/me.jpg', asset: '/expected/site-com-photos-me.jpg' },
+        { urlAsset: '/blog/about/assets/styles.css', asset: '/expected/site-com-blog-about-assets-styles.css' },
+        { urlAsset: '/assets/scripts.js', asset: '/expected/site-com-assets-scripts.js' },
+      ];
+      tmpDir = await fs.mkdtemp(path.join(os.tmpdir(), 'page-loader-'));
+      const html = await readFixture('site-com-blog-about.html');
+      nock(url).get('/blog/about').reply(200, html);
+      await Promise.all(urlAssets.map((async ({ urlAsset, asset }) => {
+        const assetFile = await readFixture(asset);
+        nock(url).get(urlAsset).reply(200, `${assetFile}`);
+      })));
+    });
 
-  test('download page from  localhost', async () => {
-    const htmlPage = await readFixture('localhost-blog-about.html');
-    const jpg = await readFixture('localhost-photos-me.jpg');
-    const css = await readFixture('localhost-blog-about-assets-styles.css');
-    const js = await readFixture('localhost-assets-scripts.js');
-    const htmlAnswer = await readFixture('/expected/localhost-blog-about.html');
-    nock('http://localhost')
-      .get('/blog/about')
-      .reply(200, htmlPage)
-      .get('/blog/about')
-      .reply(200, htmlPage)
-      .get('/photos/me.jpg')
-      .reply(200, jpg)
-      .get('/assets/scripts.js')
-      .reply(200, js)
-      .get('/blog/about/assets/styles.css')
-      .reply(200, css);
-    await downloadPage('http://localhost/blog/about', tmpDir);
-    const resultJpg = path.join(tmpDir, 'localhost-blog-about_files/localhost-photos-me.jpg');
-    const resultCss = path.join(tmpDir, 'localhost-blog-about_files/localhost-blog-about-assets-styles.css');
-    const resultJs = path.join(tmpDir, 'localhost-blog-about_files/localhost-assets-scripts.js');
-    const resultHtml = path.join(tmpDir, 'localhost-blog-about_files/localhost-blog-about.html');
-    const directory = await fs.readdir(tmpDir);
-    const directoryAsset = await fs.readdir(path.join(tmpDir, 'localhost-blog-about_files'));
-    const result = await readFile(path.join(tmpDir, 'localhost-blog-about.html'));
-    expect(existsSync(resultJpg)).toBeTruthy();
-    expect(await readFile(resultJpg)).toEqual(jpg);
-    expect(existsSync(resultCss)).toBeTruthy();
-    expect(await readFile(resultCss)).toEqual(css);
-    expect(existsSync(resultJs)).toBeTruthy();
-    expect(await readFile(resultJs)).toEqual(js);
-    expect(existsSync(resultHtml)).toBeTruthy();
-    expect(await readFile(resultHtml)).toEqual(htmlPage);
-    expect(result).toEqual(htmlAnswer);
-    expect(directory).toContain('localhost-blog-about.html');
-    expect(directory).toContain('localhost-blog-about_files');
-    expect(directoryAsset).toContain('localhost-photos-me.jpg');
-    expect(directoryAsset).toContain('localhost-blog-about-assets-styles.css');
-    expect(directoryAsset).toContain('localhost-blog-about.html');
-    expect(directoryAsset).toContain('localhost-assets-scripts.js');
+    it('download html from site.com', async () => {
+      await downloadPage('https://site.com/blog/about', tmpDir);
+      const result = await readFile(path.join(tmpDir, 'site-com-blog-about.html'));
+      const htmlAnswer = await readFixture('/expected/site-com-blog-about.html');
+      const directory = await fs.readdir(tmpDir);
+      expect(directory).toContain('site-com-blog-about.html');
+      expect(directory).toContain('site-com-blog-about_files');
+      expect(result).toEqual(htmlAnswer);
+    });
+
+    it.each(assets)('download %s asset from site.com', async (asset) => {
+      await downloadPage('https://site.com/blog/about', tmpDir);
+      const answer = await readFixture(`/expected/${asset}`);
+      const resultPath = path.join(tmpDir, `site-com-blog-about_files/${asset}`);
+      const result = await readFile(resultPath);
+      const directoryAsset = await fs.readdir(path.join(tmpDir, 'site-com-blog-about_files'));
+      expect(existsSync(resultPath)).toBeTruthy();
+      expect(directoryAsset).toContain(asset);
+      expect(result).toEqual(answer);
+    });
   });
-  test.each([404, 500])('server %s error', (code) => {
-    nock('https://site.com').get('/foo').reply(code);
-    return expect(downloadPage('https://site.com/foo')).rejects.toThrow();
-  });
-  test('access error', async () => {
-    const html = await readFixture('site-com-blog-about.html');
-    nock('https://site.com').get('/foo').reply(200, html);
-    return expect(downloadPage('https://site.com/foo', '/foo')).rejects.toThrow();
+  describe('negative cases download page', () => {
+    it.each([404, 500])('server %s error', (code) => {
+      nock('https://site.com').get('/foo').reply(code);
+      return expect(downloadPage('https://site.com/foo')).rejects.toThrow();
+    });
+    it('access error', async () => {
+      const html = await readFixture('site-com-blog-about.html');
+      nock('https://site.com').get('/foo').reply(200, html);
+      return expect(downloadPage('https://site.com/foo', '/foo')).rejects.toThrow();
+    });
   });
 });

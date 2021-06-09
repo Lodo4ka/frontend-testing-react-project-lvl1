@@ -10,7 +10,7 @@
     "node": ">=14"
   },
   "scripts": {
-    "test-watch": "DEBUG=nock.*  jest --watch",
+    "test-watch": "jest --watch",
     "test": "jest --colors --runInBand --bail",
     "test:coverage": "jest --coverage"
   },
