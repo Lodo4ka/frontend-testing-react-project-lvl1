@@ -12,8 +12,8 @@ program
     const opts = program.opts();
     const dirPath = opts.output;
     try {
-      await downloadPage(url, dirPath);
-      console.log('page has been downloaded');
+      const { filepath } = await downloadPage(url, dirPath);
+      console.log(filepath);
     } catch (error) {
       console.error(error.message);
       process.exit(1);
