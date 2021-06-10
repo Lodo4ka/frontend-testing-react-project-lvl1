@@ -49,4 +49,5 @@ export default async (url, dirPath = process.cwd()) => {
   const htmlData = $.html();
 
   await fs.writeFile(filePath, htmlData);
+  return filePath;
 };
