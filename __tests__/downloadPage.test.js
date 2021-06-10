@@ -67,6 +67,17 @@ describe('download page and save in tmp directory', () => {
       nock('https://site.com').get('/foo').reply(code);
       return expect(downloadPage('https://site.com/foo')).rejects.toThrow();
     });
+
+    it('download no response', () => {
+      nock('https://site.com').get('/foo').reply(204);
+      return expect(downloadPage('https://site.com/foo', 'foo')).rejects.toThrow();
+    });
+
+    it('download with file system errors ENOENT', () => {
+      nock('https://site.com').get('/foo').reply(200);
+      return expect(downloadPage('https://site.com/foo', 'foo')).rejects.toThrow('ENOENT');
+    });
+
     it('access error', async () => {
       const html = await readFixture('site-com-blog-about.html');
       nock('https://site.com').get('/foo').reply(200, html);
