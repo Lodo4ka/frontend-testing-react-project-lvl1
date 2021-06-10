@@ -63,19 +63,19 @@ describe('download page and save in tmp directory', () => {
     });
   });
   describe('negative cases download page', () => {
+    let tmpDir;
+
+    beforeEach(async () => {
+      tmpDir = await fs.mkdtemp(path.join(os.tmpdir(), 'page-loader-'));
+    });
     it.each([404, 500])('server %s error', (code) => {
       nock('https://site.com').get('/foo').reply(code);
       return expect(downloadPage('https://site.com/foo')).rejects.toThrow();
     });
 
-    it('download no response', () => {
-      nock('https://site.com').get('/foo').reply(204);
-      return expect(downloadPage('https://site.com/foo', 'foo')).rejects.toThrow();
-    });
-
     it('download with file system errors ENOENT', () => {
       nock('https://site.com').get('/foo').reply(200);
-      return expect(downloadPage('https://site.com/foo', 'foo')).rejects.toThrow('ENOENT');
+      return expect(downloadPage('https://site.com/foo', '<h1>hello</h1>')).rejects.toThrow('ENOENT');
     });
 
     it('access error', async () => {
