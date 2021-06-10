@@ -63,11 +63,6 @@ describe('download page and save in tmp directory', () => {
     });
   });
   describe('negative cases download page', () => {
-    let tmpDir;
-
-    beforeEach(async () => {
-      tmpDir = await fs.mkdtemp(path.join(os.tmpdir(), 'page-loader-'));
-    });
     it.each([404, 500])('server %s error', (code) => {
       nock('https://site.com').get('/foo').reply(code);
       return expect(downloadPage('https://site.com/foo')).rejects.toThrow();
